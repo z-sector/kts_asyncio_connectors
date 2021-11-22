@@ -1,0 +1,10 @@
+.gitlab-ci.yml
+.mercury.yaml
+.git
+**/.pytest_cache
+**/__pycache__
+.idea
+*.pyc
+env
+**/_solved_*
+clients/
