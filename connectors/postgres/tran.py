@@ -10,7 +10,7 @@ async def get_connection_by_dsn():
     """
     POSTGRES_DSN = postgres://user:password@host:port/database
     """
-    return await asyncpg.connect(os.getenv("POSTGRES_DSN"))
+    return await asyncpg.connect(os.getenv("POSTGRES_DSN", "postgres://postgres:postgres@localhost:45432/postgres"))
 
 
 async def insert_many(conn) -> asyncpg.Record:

@@ -1,18 +1,18 @@
 import asyncio
 import datetime
 import os
-from typing import Optional
+from typing import Optional, List
 
 import asyncpg
 
 
 async def get_connection():
     return await asyncpg.connect(
-        host=os.getenv("POSTGRES_HOST"),
-        port=os.getenv("POSTGRES_PORT"),
-        user=os.getenv("POSTGRES_USER"),
-        password=os.getenv("POSTGRES_PASSWORD"),
-        database=os.getenv("POSTGRES_DATABASE")
+        host=os.getenv("POSTGRES_HOST", "localhost"),
+        port=os.getenv("POSTGRES_PORT", "45432"),
+        user=os.getenv("POSTGRES_USER", "postgres"),
+        password=os.getenv("POSTGRES_PASSWORD", "postgres"),
+        database=os.getenv("POSTGRES_DATABASE", "postgres")
     )
 
 
@@ -20,7 +20,7 @@ async def get_connection_by_dsn():
     """
     POSTGRES_DSN = postgres://user:password@host:port/database
     """
-    return await asyncpg.connect(os.getenv("POSTGRES_DSN"))
+    return await asyncpg.connect(os.getenv("POSTGRES_DSN", "postgres://postgres:postgres@localhost:45432/postgres"))
 
 
 async def insert(conn) -> asyncpg.Record:
@@ -31,7 +31,7 @@ async def insert(conn) -> asyncpg.Record:
     return res
 
 
-async def select(conn, user_id) -> list[asyncpg.Record]:
+async def select(conn, user_id) -> List[asyncpg.Record]:
     res = await conn.fetch("select * from users where id = $1", user_id)
     return res
 
