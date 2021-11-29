@@ -5,12 +5,13 @@ from aio_pika import connect, IncomingMessage, ExchangeType
 
 
 async def create_connection():
-    return await connect(url=os.getenv("RABBITMQ_URL"))
+    return await connect(url=os.getenv("RABBITMQ_URL", "amqp://admin:admin@localhost:45672/"))
 
 
 async def on_message(message: IncomingMessage):
     async with message.process():
-        with open('logs.txt', 'w') as fd:
+        await asyncio.sleep(5)
+        with open('logs.txt', 'a') as fd:
             fd.write(str(message))
             fd.write('\n')
 
