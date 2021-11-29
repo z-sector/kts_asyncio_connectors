@@ -5,7 +5,7 @@ from aio_pika import connect, IncomingMessage
 
 
 async def create_connection():
-    return await connect(url=os.getenv("RABBITMQ_URL"))
+    return await connect(url=os.getenv("RABBITMQ_URL", "amqp://admin:admin@localhost:45672/"))
 
 
 async def on_message(message: IncomingMessage):
@@ -18,7 +18,7 @@ async def on_message(message: IncomingMessage):
 async def receiver():
     connection = await create_connection()
     channel = await connection.channel()
-    await channel.set_qos(prefetch_count=1)
+    await channel.set_qos(prefetch_count=2)
     queue = await channel.declare_queue("ack")
     await queue.consume(on_message)
 
