@@ -14,5 +14,31 @@ services:
       - "45432:5432"
     command: postgres -c shared_preload_libraries=pg_stat_statements -c log_statement=all -c log_min_messages=INFO -c log_min_duration_statement=0
 
+  mongo:
+    image: mongo:4.4.10
+    restart: always
+    volumes:
+      - mg_volume:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - "27017:27017"
+
+  mongo-express:
+    image: mongo-express:0.54.0
+    restart: always
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_PORT: "27017"
+    ports:
+      - "48081:8081"
+    depends_on:
+      - mongo
+
+
 volumes:
   pg_volume:
+  mg_volume:

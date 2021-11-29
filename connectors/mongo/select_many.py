@@ -5,7 +5,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 
 def get_client():
-    return AsyncIOMotorClient(os.getenv("MONGO_URL"))
+    return AsyncIOMotorClient(os.getenv("MONGO_URL", "mongodb://root:example@localhost:27017/"))
 
 
 def get_db():
