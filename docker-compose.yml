@@ -38,7 +38,21 @@ services:
     depends_on:
       - mongo
 
+  rabbitmq:
+    image: rabbitmq:3.8.26-management
+    restart: always
+    volumes:
+      - rabbitmq_volume:/var/lib/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: 'admin'
+      RABBITMQ_DEFAULT_PASS: 'admin'
+    ports:
+      - "45672:5672"
+      - "15673:15672"
+
+
 
 volumes:
   pg_volume:
   mg_volume:
+  rabbitmq_volume:
