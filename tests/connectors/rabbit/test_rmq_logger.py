@@ -4,11 +4,11 @@ from unittest.mock import AsyncMock
 
 import aio_pika
 
-from connectors.rabbit.task.rmq_logger import Logger
+from connectors.rabbit.task.rmq_logger import Logger, LoggerConfig
 
 
 class TestLogger:
-    async def test_info(self, logger_config):
+    async def test_info(self, logger_config: LoggerConfig):
         """
         объявляем временную очередь, присоединяем ее к exchange
         после вызова logger.info ожидаем, что в нее придет сообщение
@@ -37,7 +37,7 @@ class TestLogger:
         await conn.close()
         await logger.stop()
 
-    async def test_info_handler(self, logger_config):
+    async def test_info_handler(self, logger_config: LoggerConfig):
         info_mock = AsyncMock(return_value='')
         critical_mock = AsyncMock(return_value='')
 
@@ -58,7 +58,7 @@ class TestLogger:
 
         await logger.stop()
 
-    async def test_critical_handler(self, logger_config):
+    async def test_critical_handler(self, logger_config: LoggerConfig):
         info_mock = AsyncMock(return_value='')
         critical_mock = AsyncMock(return_value='')
 
