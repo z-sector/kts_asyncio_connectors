@@ -17,7 +17,7 @@ class MetaclassLogger(Logger):
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
-    logger = MetaclassLogger(os.getenv("RABBITMQ_URL"))
+    logger = MetaclassLogger(os.getenv("RABBITMQ_URL", "amqp://admin:admin@localhost:45672/"))
     loop.create_task(logger.start())
     try:
         loop.run_forever()

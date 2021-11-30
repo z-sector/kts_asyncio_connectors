@@ -33,8 +33,8 @@ class BotLogger(Logger):
 
 def run_logger():
     config = BotLoggerConfig(
-        rabbit_url=os.getenv("RABBITMQ_URL"),
-        mongo_url=os.getenv("MONGO_URL"),
+        rabbit_url=os.getenv("RABBITMQ_URL", "amqp://admin:admin@localhost:45672/"),
+        mongo_url=os.getenv("MONGO_URL", "mongodb://root:example@localhost:27017/"),
         name="bot_logger"
     )
     logger = BotLogger(config)

@@ -44,7 +44,7 @@ class BotWorker(Worker):
 def run_worker():
     token = os.getenv("BOT_TOKEN")
     worker_config = WorkerConfig(
-        rabbit_url=os.getenv("RABBITMQ_URL"),
+        rabbit_url=os.getenv("RABBITMQ_URL", "amqp://admin:admin@localhost:45672/"),
         queue_name="bot_poller",
         capacity=5
     )

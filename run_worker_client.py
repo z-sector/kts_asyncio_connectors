@@ -6,7 +6,7 @@ from connectors.rabbit.task.rmq_worker import WorkerClient, WorkerClientConfig
 
 async def run():
     config = WorkerClientConfig(
-        rabbit_url=os.getenv("RABBITMQ_URL"),
+        rabbit_url=os.getenv("RABBITMQ_URL", "amqp://admin:admin@localhost:45672/"),
         queue_name="worker_metaclass",
     )
     async with WorkerClient(config) as worker:

@@ -45,12 +45,12 @@ def run_poller():
     token = os.getenv("BOT_TOKEN")
     config = PollerConfig(
         worker_client_config=WorkerClientConfig(
-            rabbit_url=os.getenv("RABBITMQ_URL"),
+            rabbit_url=os.getenv("RABBITMQ_URL", "amqp://admin:admin@localhost:45672/"),
             queue_name="bot_poller"
         ),
         logger_config=BotLoggerConfig(
-            rabbit_url=os.getenv("RABBITMQ_URL"),
-            mongo_url=os.getenv("MONGO_URL"),
+            rabbit_url=os.getenv("RABBITMQ_URL", "amqp://admin:admin@localhost:45672/"),
+            mongo_url=os.getenv("MONGO_URL", "mongodb://root:example@localhost:27017/"),
             name="bot_logger",
         )
     )

@@ -25,7 +25,7 @@ class Logger:
 
     async def handle_critical(self, payload: dict):
         """
-        метод handle_info должен вызываться, когда в очередь пришло сообщение с routing_key = "critical"
+        метод handle_critical должен вызываться, когда в очередь пришло сообщение с routing_key = "critical"
         """
         raise NotImplementedError
 

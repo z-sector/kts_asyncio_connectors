@@ -66,7 +66,7 @@ class TestWorker:
         await worker.stop()
         assert worker.max_concurrent == worker_config.capacity
 
-    @pytest.mark.skip
+    # @pytest.mark.skip
     async def test_cancel(self, worker_config):
         """
         тест проверяет, что все запущенный корутины завершили свою работы и не были отменены

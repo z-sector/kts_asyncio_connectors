@@ -6,7 +6,7 @@ from run_logger import MetaclassLogger
 
 
 async def run(level: str):
-    async with MetaclassLogger(os.getenv("RABBITMQ_URL")) as logger:
+    async with MetaclassLogger(os.getenv("RABBITMQ_URL", "amqp://admin:admin@localhost:45672/")) as logger:
         if level == 'info':
             await logger.info('run_logger_client.py', {'info': True})
         if level == 'critical':
