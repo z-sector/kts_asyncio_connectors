@@ -2,6 +2,8 @@ import asyncio
 import os
 from dataclasses import dataclass
 
+from motor.motor_asyncio import AsyncIOMotorClient
+
 from connectors.rabbit.task.rmq_logger import Logger, LoggerConfig
 
 
@@ -16,19 +18,24 @@ class BotLogger(Logger):
         """
         сохранить BotLoggerConfig
         """
-        raise NotImplementedError
+        super().__init__(config)
+        self.config = config
 
     async def handle_info(self, payload: dict):
         """
         сохранить payload в mongo
         """
-        raise NotImplementedError
+        cli = AsyncIOMotorClient(self.config.mongo_url)
+        db = cli[self.config.mongo_db]
+        await db.logs.insert_one(payload)
 
     async def handle_critical(self, payload: dict):
         """
         сохранить payload в mongo
         """
-        raise NotImplementedError
+        cli = AsyncIOMotorClient(self.config.mongo_url)
+        db = cli[self.config.mongo_db]
+        await db.logs.insert_one(payload)
 
 
 def run_logger():

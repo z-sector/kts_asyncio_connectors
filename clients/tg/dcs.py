@@ -59,6 +59,11 @@ class UpdateObj:
     update_id: int
     message: Message
 
+    Schema: ClassVar[Type[Schema]] = Schema
+
+    class Meta:
+        unknown = EXCLUDE
+
 
 @dataclass
 class GetUpdatesResponse:

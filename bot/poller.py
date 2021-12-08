@@ -1,10 +1,13 @@
 import asyncio
 import os
 from dataclasses import dataclass
+from typing import Optional
 
-from bot.logger import BotLoggerConfig
+from bot.logger import BotLoggerConfig, BotLogger
 from bot.utils import log_exceptions
-from connectors.rabbit.task.rmq_worker import WorkerClientConfig
+from clients.fapi.tg import TgClientWithFile
+from clients.tg.dcs import UpdateObj
+from connectors.rabbit.task.rmq_worker import WorkerClientConfig, WorkerClient
 
 
 @dataclass
@@ -15,7 +18,11 @@ class PollerConfig:
 
 class Poller:
     def __init__(self, token: str, config: PollerConfig):
-        raise NotImplementedError
+        self.tg_client = TgClientWithFile(token)
+        self.worker_client = WorkerClient(config.worker_client_config)
+        self.logger = BotLogger(config.logger_config)
+        self.is_running = False
+        self._task: Optional[asyncio.Task] = None
 
     @log_exceptions
     async def _worker(self):
@@ -26,19 +33,35 @@ class Poller:
         в очередь queue нужно класть UpdateObj
         UpdateObj нужно привести обратно к словарю, через rabbit нельзя передавать объекты
         """
-        raise NotImplementedError
+        offset = 0
+        while self.is_running:
+            updates = await self.tg_client.get_updates_in_objects(offset=offset, timeout=60)
+            for u in updates:
+                offset = u.update_id + 1
+                data = UpdateObj.Schema().dump(u)
+                await self.logger.info('update_obj', data)
+                await self.worker_client.put(data)
 
     async def start(self):
         """
         нужно запустить корутину _worker
         """
-        raise NotImplementedError
+        self.is_running = True
+        self._task = asyncio.create_task(self._worker())
+        await self.logger.start()
 
     async def stop(self):
         """
         нужно отменить корутину _worker и дождаться ее отмены
         """
-        raise NotImplementedError
+        self.is_running = False
+        self._task.cancel()
+        try:
+            await self._task
+        except asyncio.CancelledError:
+            pass
+        await self.logger.stop()
+        await self.worker_client.stop()
 
 
 def run_poller():

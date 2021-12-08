@@ -11,7 +11,7 @@ from . import data
 
 
 class TestWorker:
-    async def test_queue(self, tg_token, tg_base_url, bot_config, poller_config: PollerConfig):
+    async def test_queue(self, tg_token, tg_base_url, bot_config: BotConfig, poller_config: PollerConfig):
         """
         ожидаем, что если положим в очередь сообщение будет вызван метод handle_update
         """

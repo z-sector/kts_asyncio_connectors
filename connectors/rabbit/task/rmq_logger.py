@@ -91,6 +91,7 @@ class Logger:
             ),
             routing_key='info'
         )
+        return 1
 
     async def critical(self, msg: str, data: dict):
         """

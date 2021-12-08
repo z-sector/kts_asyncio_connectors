@@ -28,7 +28,7 @@ class TestLoggerInPoller:
                 m.get(tg_base_url(f'getUpdates?offset=503972236&timeout=60'), callback=cb)
                 poller = Poller(tg_token, poller_config)
                 await poller.start()
-                await asyncio.sleep(0.1)
+                await asyncio.sleep(1)
 
                 assert info_mock.called
 

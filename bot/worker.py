@@ -4,7 +4,8 @@ import os
 import aio_pika
 from dataclasses import dataclass
 
-from bot.pg import PgConfig
+from bot.pg import PgConfig, Pg
+from clients.fapi.tg import TgClientWithFile
 from clients.tg.dcs import UpdateObj
 from connectors.rabbit.task.rmq_worker import Worker, WorkerConfig
 
@@ -20,7 +21,18 @@ class BotWorker(Worker):
         """
         принять config
         """
-        raise NotImplementedError
+        self.tg_client = TgClientWithFile(token)
+        self.config = config
+        self.pg = Pg(config.pg_config)
+        super().__init__(config.worker_config)
+
+    async def start(self):
+        await self.pg.setup()
+        return await super().start()
+
+    async def stop(self):
+        await super().stop()
+        await self.pg.stop()
 
     async def handler(self, msg: aio_pika.IncomingMessage):
         """
@@ -28,10 +40,16 @@ class BotWorker(Worker):
         он должен принимать сообщения из очереди, конвертировать их в объект UpdateObj
         затем вызывать метод handle_update, в котором будет реализована бизнес-логика бота
         """
-        raise NotImplementedError
+        upd = UpdateObj.Schema().loads(msg.body)
+        await self.handle_update(upd)
 
     async def handle_update(self, upd: UpdateObj):
-        raise NotImplementedError
+        user_id = upd.message.from_.id
+        _, created = await self.pg.get_or_create(user_id, upd.message.from_.username)
+        if created:
+            await self.tg_client.send_message(upd.message.chat.id, '[greeting]')
+            return
+        await self.tg_client.send_message(upd.message.chat.id, '[nice to meet you]')
 
     """
     примечание:
@@ -50,7 +68,7 @@ def run_worker():
     )
     bot_config = BotConfig(
         worker_config=worker_config,
-        pg_config=PgConfig(url=os.getenv("POSTGRES_DSN"))
+        pg_config=PgConfig(url=os.getenv("POSTGRES_DSN", "postgres://postgres:postgres@localhost:45432/postgres"))
     )
     worker = BotWorker(token, bot_config)
 

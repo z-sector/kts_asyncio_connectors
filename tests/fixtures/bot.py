@@ -34,5 +34,5 @@ async def bot_config(tg_token):
     )
     return BotConfig(
         worker_config=worker_config,
-        pg_config=PgConfig(url=os.getenv("POSTGRES_DSN"))
+        pg_config=PgConfig(url=os.getenv("POSTGRES_DSN", "postgres://postgres:postgres@localhost:45432/postgres"))
     )
